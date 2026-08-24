@@ -1,8 +1,9 @@
-# Grain custom DuckDB driver
+# Grain DuckDB 2.0 preview driver
 
-This fork keeps the `database/sql` API of `duckdb-go/v2` and pins its C API
-dependency to `github.com/openlearnia/duckdb-go-bindings`. Build applications
-with the `duckdb_grain` tag and the matching custom DuckDB runtime:
+This fork keeps the `database/sql` API of `duckdb-go/v2` and uses the
+DuckDB 2.0 preview C API through `github.com/openlearnia/duckdb-go-bindings`.
+Build applications with the `duckdb_grain` tag and the matching custom
+DuckDB runtime:
 
 ```sh
 CGO_ENABLED=1 \

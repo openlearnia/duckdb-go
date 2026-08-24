@@ -5,7 +5,7 @@
 
 The DuckDB driver conforms to the built-in `database/sql` interface.
 
-**Current DuckDB version: `v1.5.5`.**
+**Current DuckDB version: `v2.0.0-alpha38615` (OpenLearnia preview fork).**
 
 The first duckdb-go tag with that version is `v2.10505.0`.
 
