@@ -9,6 +9,9 @@ import (
 )
 
 func TestOpenSQLite(t *testing.T) {
+	if grainBuild {
+		t.Skip("the custom DuckDB runtime does not bundle sqlite_scanner; test it through the custom repository separately")
+	}
 	db := openDbWrapper(t, `sqlite:testdata/pets.sqlite`)
 	defer closeDbWrapper(t, db)
 

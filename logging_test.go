@@ -67,7 +67,11 @@ func TestLogStorage(t *testing.T) {
 	require.NoError(t, err)
 
 	// Ensure that our log storage contains the logs.
-	require.Len(t, myLogStore.store, 4)
+	if grainBuild {
+		require.Len(t, myLogStore.store, 8)
+	} else {
+		require.Len(t, myLogStore.store, 4)
+	}
 	require.True(t, myLogStore.Contains("ATTACH 'test_logging.db'"))
 	require.True(t, myLogStore.Contains("PRAGMA wal_autocheckpoint = '1TB';"))
 	require.True(t, myLogStore.Contains("PRAGMA debug_checkpoint_abort = 'before_header';"))

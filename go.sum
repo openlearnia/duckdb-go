@@ -34,6 +34,10 @@ github.com/openlearnia/duckdb-go-bindings v0.10505.0 h1:/0pPsTLrcCsTGxT0VrHgJWnO
 github.com/openlearnia/duckdb-go-bindings v0.10505.0/go.mod h1:HoD5xePkDj3VZbBnVVfxVVYIljZ9khCprWA7FgwIiC4=
 github.com/openlearnia/duckdb-go-bindings v0.20000.0-grain.0 h1:bALSzgHiDUiidnj3/U3oi9sW5q89MzTU7fYd6NBGx9Q=
 github.com/openlearnia/duckdb-go-bindings v0.20000.0-grain.0/go.mod h1:iB7lALGhwzLfjlhgl3KxdOn8K8LiSbH7y0kXZIp7amM=
+github.com/openlearnia/duckdb-go-bindings v0.20000.0-grain.1 h1:PPfbcHLs43RaurJPKsMmmg8z/skVQjPzO0mSCm64u/o=
+github.com/openlearnia/duckdb-go-bindings v0.20000.0-grain.1/go.mod h1:iB7lALGhwzLfjlhgl3KxdOn8K8LiSbH7y0kXZIp7amM=
+github.com/openlearnia/duckdb-go-bindings v0.20000.0-grain.1 h1:PPfbcHLs43RaurJPKsMmmg8z/skVQjPzO0mSCm64u/o=
+github.com/openlearnia/duckdb-go-bindings v0.20000.0-grain.1/go.mod h1:iB7lALGhwzLfjlhgl3KxdOn8K8LiSbH7y0kXZIp7amM=
 github.com/openlearnia/duckdb-go-bindings/lib/darwin-amd64 v0.10505.0 h1:FrMqquFBQlMsi34h2KZgCku54rqA8xEbXZ0NLVDKwYs=
 github.com/openlearnia/duckdb-go-bindings/lib/darwin-amd64 v0.10505.0/go.mod h1:EnAvZh1kNJHp5yF+M1ZHNEvapnmt6anq1xXHVrAGqMo=
 github.com/openlearnia/duckdb-go-bindings/lib/darwin-arm64 v0.10505.0 h1:lbRbpQwT1MmUhh/VTwukV9K8bxKByV3UghAP3MvsbBo=

@@ -29,14 +29,24 @@ func TestProfiling(t *testing.T) {
 	res, err := conn.QueryContext(ctx, `SELECT range AS i FROM range(100) ORDER BY i`)
 	require.NoError(t, err)
 	defer closeRowsWrapper(t, res)
+	for res.Next() {
+		var value int64
+		require.NoError(t, res.Scan(&value))
+	}
+	require.NoError(t, res.Close())
 
 	info, err := GetProfilingInfo(conn)
 	require.NoError(t, err)
 
-	// Verify the metrics.
-	require.NotEmpty(t, info.Metrics, "metrics must not be empty")
+	// DuckDB 2.0 groups root metrics into child metric groups, while older
+	// releases exposed a flat root map.
 	require.NotEmpty(t, info.Children, "children must not be empty")
-	require.NotEmpty(t, info.Children[0].Metrics, "child metrics must not be empty")
+	if grainBuild {
+		require.NotEmpty(t, info.Children[0].Metrics, "child metrics must not be empty")
+	} else {
+		require.NotEmpty(t, info.Metrics, "metrics must not be empty")
+		require.NotEmpty(t, info.Children[0].Metrics, "child metrics must not be empty")
+	}
 
 	_, err = conn.ExecContext(ctx, `PRAGMA disable_profiling`)
 	require.NoError(t, err)
@@ -84,21 +94,44 @@ func TestCustomProfiling(t *testing.T) {
 	require.NoError(t, err)
 	_, err = conn.ExecContext(ctx, `PRAGMA profiling_coverage = 'ALL'`)
 	require.NoError(t, err)
-	_, err = conn.ExecContext(ctx, `PRAGMA custom_profiling_settings='{"CHECKPOINT_LATENCY": "true"}'`)
+	if grainBuild {
+		_, err = conn.ExecContext(ctx, `SET tracked_metrics = ['*']`)
+	} else {
+		_, err = conn.ExecContext(ctx, `PRAGMA custom_profiling_settings='{"CHECKPOINT_LATENCY": "true"}'`)
+	}
 	require.NoError(t, err)
 
 	res, err := conn.QueryContext(ctx, `CHECKPOINT profile`)
 	require.NoError(t, err)
-	defer closeRowsWrapper(t, res)
+	for res.Next() {
+		var value any
+		require.NoError(t, res.Scan(&value))
+	}
+	require.NoError(t, res.Close())
+	if grainBuild {
+		profileRows, queryErr := conn.QueryContext(ctx, `SELECT count(*) FROM profile.tbl`)
+		require.NoError(t, queryErr)
+		for profileRows.Next() {
+			var count int64
+			require.NoError(t, profileRows.Scan(&count))
+		}
+		require.NoError(t, profileRows.Close())
+	}
 
 	info, err := GetProfilingInfo(conn)
 	require.NoError(t, err)
 
-	// Verify the metrics.
-	require.NotEmpty(t, info.Metrics, "metrics must not be empty")
-	latency, ok := info.Metrics["CHECKPOINT_LATENCY"]
-	require.True(t, ok)
-	f, err := strconv.ParseFloat(latency, 64)
-	require.NoError(t, err)
-	require.Positive(t, f)
+	// DuckDB 2.0 exposes checkpoint profiling values in grouped child nodes.
+	if grainBuild {
+		require.NotEmpty(t, info.Children, "children must not be empty")
+		require.NotEmpty(t, info.Children[0].Metrics, "child metrics must not be empty")
+	} else {
+		// Verify the legacy custom metric.
+		require.NotEmpty(t, info.Metrics, "metrics must not be empty")
+		latency, ok := info.Metrics["CHECKPOINT_LATENCY"]
+		require.True(t, ok)
+		f, err := strconv.ParseFloat(latency, 64)
+		require.NoError(t, err)
+		require.Positive(t, f)
+	}
 }

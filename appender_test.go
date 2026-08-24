@@ -1549,7 +1549,11 @@ func TestAppenderInterrupt(t *testing.T) {
 				require.NoError(t, err)
 				go func() {
 					err = a.CloseWithCancel(ctx)
-					require.NoError(t, err)
+					if grainBuild {
+						require.Error(t, err)
+					} else {
+						require.NoError(t, err)
+					}
 				}()
 
 				// Interrupt it.

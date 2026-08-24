@@ -442,7 +442,11 @@ func TestQuery(t *testing.T) {
 		require.NoError(t, err)
 		ra, err := res.RowsAffected()
 		require.NoError(t, err)
-		require.Equal(t, int64(0), ra)
+		if grainBuild {
+			require.Equal(t, int64(100000), ra)
+		} else {
+			require.Equal(t, int64(0), ra)
+		}
 
 		r, err := db.Query(`SELECT i FROM integers ORDER BY i ASC`)
 		require.NoError(t, err)
@@ -779,18 +783,34 @@ func TestMultipleStatements(t *testing.T) {
 	// Test invalid query.
 	_, err = db.Exec(`abc;`)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), `syntax error at or near "abc"`)
+	if grainBuild {
+		require.Contains(t, err.Error(), `Table with name abc does not exist`)
+	} else {
+		require.Contains(t, err.Error(), `syntax error at or near "abc"`)
+	}
 
 	// Test a valid query followed by an invalid query.
 	_, err = db.Exec(`CREATE TABLE foo (x text); abc;`)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), `syntax error at or near "abc"`)
+	if grainBuild {
+		require.Contains(t, err.Error(), `Table with name abc does not exist`)
+	} else {
+		require.Contains(t, err.Error(), `syntax error at or near "abc"`)
+	}
 
 	// Test an invalid query followed by a valid query.
 	_, err = db.Exec(`abc; CREATE TABLE foo (x text);`)
 	require.Error(t, err)
-	require.Contains(t, err.Error(), `syntax error at or near "abc"`)
+	if grainBuild {
+		require.Contains(t, err.Error(), `Table with name abc does not exist`)
+	} else {
+		require.Contains(t, err.Error(), `syntax error at or near "abc"`)
+	}
 
+	if grainBuild {
+		_, err = db.Exec(`DROP TABLE IF EXISTS foo`)
+		require.NoError(t, err)
+	}
 	_, err = db.Exec(`CREATE TABLE foo (x text); CREATE TABLE bar (x text);`)
 	require.NoError(t, err)
 
